@@ -1,21 +1,16 @@
-# Razzle x After.js
+# ShopApplicationDemo
 
 ## How to use
 
-Download the example [or clone the whole project](https://github.com/jaredpalmer/after.js.git):
+update\install npm modules , and run:
 
 ```bash
-curl https://codeload.github.com/jaredpalmer/after.js/tar.gz/master | tar -xz --strip=2 razzle-master/examples/basic
-cd basic
-```
-
-Install it and run:
-
-```bash
-yarn install
+npm install
 yarn start
+//or
+npm start
 ```
 
 ## Idea behind the example
-
-This is a basic, bare-bones example of how to use After.js and Razzle.
+SSR-SPA-NodeJS-React Demo appication.
+This is a basic, bare-bones example of shopping web spa application
