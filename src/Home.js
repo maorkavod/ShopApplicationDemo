@@ -8,36 +8,35 @@ import Header from "./Header";
 class Home extends React.Component {
   static async getInitialProps({ req, res, match }) {
     if (!process.browser) {
-    let dataSet = [];
-    try {
-      const response = await axios(process.env.DATA_SOURCE);
-      const chunkSize = 9;
-      const arrayFromObject = Object.entries(response.data).map(
-        ([key, value]) => value
-      );
-      const chunks = chunk(arrayFromObject, chunkSize);
-      let categories = [
-      "קטגוריות"
-      ];
+      let dataSet = [];
+      try {
+        const response = await axios(process.env.DATA_SOURCE);
+        const chunkSize = 9;
+        const arrayFromObject = Object.entries(response.data).map(
+          ([key, value]) => value
+        );
+        const chunks = chunk(arrayFromObject, chunkSize);
+        let categories = ["קטגוריות"];
 
-      response.data.forEach(function (item, key) {
-        if (item.store_category.group_title && !categories.includes(item.store_category.group_title)) {
-            categories.push(
-              item.store_category.group_title
-            );
-        }
-      });
+        response.data.forEach(function (item, key) {
+          if (
+            item.store_category.group_title &&
+            !categories.includes(item.store_category.group_title)
+          ) {
+            categories.push(item.store_category.group_title);
+          }
+        });
 
-      return {
-        dataSetChunks: chunks,
-        categories: categories,
-      };
-    } catch (e) {
-      console.error(`ERROR : ${e}`);
-      //notify to stdout &    than error page
-      return { statusCode: 302, redirectTo: "/notFound" };
+        return {
+          dataSetChunks: chunks,
+          categories: categories,
+        };
+      } catch (e) {
+        console.error(`ERROR : ${e}`);
+        //notify to stdout &    than error page
+        return { statusCode: 302, redirectTo: "/notFound" };
+      }
     }
-  }
   }
 
   constructor(props) {
@@ -53,17 +52,15 @@ class Home extends React.Component {
     };
   }
 
-
   componentDidMount() {
-        if(!this.props.dataSetChunks){
-          this.setState(prevState => {
-
-              prevState = JSON.parse(localStorage.getItem('temp_state'));
-              return prevState;
-          });
-        } else {
-          localStorage.setItem('temp_state', JSON.stringify(this.state));
-        }
+    if (!this.props.dataSetChunks) {
+      this.setState((prevState) => {
+        prevState = JSON.parse(localStorage.getItem("temp_state"));
+        return prevState;
+      });
+    } else {
+      localStorage.setItem("temp_state", JSON.stringify(this.state));
+    }
   }
 
   handleChange = (event) => {
@@ -73,39 +70,39 @@ class Home extends React.Component {
       category = false;
     }
 
-    this.state.dataSetChunks.forEach(function(chunk,index) {
+    this.state.dataSetChunks.forEach(function (chunk, index) {
       chunk.forEach(function (item, key) {
         if (item.store_category.group_title === category) {
           result.push(item);
         }
       });
-    })
+    });
 
     this.setState({
       selected_category: category,
       serch_results: result,
-      showByChunks : false
+      showByChunks: false,
     });
-  }
+  };
 
   handleClick = (e) => {
-        let results = [];
-        let search_for = document.querySelector("#site-search").value;
-        if(!search_for) {
-          return false;
-        }
+    let results = [];
+    let search_for = document.querySelector("#site-search").value;
+    if (!search_for) {
+      return false;
+    }
 
-        this.state.dataSetChunks.forEach(function(chunk,index) {
-            let items = chunk.filter(o => o.title.includes(search_for));
-            results = [...results, ...items];
-        })
+    this.state.dataSetChunks.forEach(function (chunk, index) {
+      let items = chunk.filter((o) => o.title.includes(search_for));
+      results = [...results, ...items];
+    });
 
-        this.setState({
-          search_by_keyword: true,
-          serch_results: results,
-          showByChunks : false
-        });
-  }
+    this.setState({
+      search_by_keyword: true,
+      serch_results: results,
+      showByChunks: false,
+    });
+  };
 
   componentDidCatch(error, info) {
     this.setState({ error: true });
@@ -117,119 +114,129 @@ class Home extends React.Component {
       return <div>אירעה שגיאה</div>;
     }
 
-    if(!this.state.dataSetChunks) {
-      return (null);
+    if (!this.state.dataSetChunks) {
+      return null;
     }
     return (
       <>
-      <Header/>
-      <div className={"main-wrapper"}>
-        <div className="container tools-bar">
+        <Header />
+        <div className={"main-wrapper"}>
+          <div className="container tools-bar">
+            <div className={"open-search"}>
+              <button onClick={this.handleClick.bind(this)}>חיפוש</button>
+              <input type="text" id="site-search" placeholder={"חיפוש חופשי"} />
+            </div>
 
-          <div className={"open-search"}>
-            <button onClick={this.handleClick.bind(this)}>חיפוש</button>
-            <input type="text" id="site-search" placeholder={"חיפוש חופשי"}/>
-          </div>
-
-          <div className={"categories-selector"}>
-
-            <select onChange={this.handleChange} value={this.state.value}>
-              {this.state.categories.map(function (item, index) {
-                return (
-                  <option key={index} value={item}>
-                    {item}
-                  </option>
-                );
-              })}
-            </select>
-          </div>
-
-        </div>
-        <div className="container">
-          <div className="grid-row">
-            {!this.state.showByChunks && (
-              <>
-                {this.state.serch_results.map(function (item, index) {
-                  return <ItemBlock key={item.id} item={item} />;
+            <div className={"categories-selector"}>
+              <select onChange={this.handleChange} value={this.state.value}>
+                {this.state.categories.map(function (item, index) {
+                  return (
+                    <option key={index} value={item}>
+                      {item}
+                    </option>
+                  );
                 })}
-              </>
-            )}
+              </select>
+            </div>
+          </div>
+          <div className="container">
+            <div className="grid-row">
+              {!this.state.showByChunks && (
+                <>
+                  {this.state.serch_results.map(function (item, index) {
+                    return <ItemBlock key={item.id} item={item} />;
+                  })}
+                </>
+              )}
 
-            {!this.state.selected_category && (
-              <>
-              <div className={"pageing-wrapper center"}>
-                <span onClick={function(e) {
-                    if(that.state.page_index === that.state.dataSetChunks.length){
-                      return false;
+              {!this.state.selected_category && (
+                <>
+                  <div className={"pageing-wrapper center"}>
+                    <span
+                      onClick={function (e) {
+                        if (
+                          that.state.page_index ===
+                          that.state.dataSetChunks.length
+                        ) {
+                          return false;
+                        }
+                        that.setState({
+                          page_index: that.state.page_index + 1,
+                        });
+                      }}
+                    >
+                      הבא
+                    </span>
+
+                    <span>
+                      &nbsp; דף &nbsp;
+                      {that.state.page_index + 1}
+                      &nbsp; מתוך &nbsp;
+                      {that.state.dataSetChunks.length}
+                    </span>
+
+                    <span
+                      onClick={function (e) {
+                        if (that.state.page_index === 0) {
+                          return false;
+                        }
+                        that.setState({
+                          page_index: that.state.page_index - 1,
+                        });
+                      }}
+                    >
+                      הקודם
+                    </span>
+                  </div>
+
+                  {this.state.dataSetChunks[that.state.page_index].map(
+                    function (item, index) {
+                      return <ItemBlock key={item.id} item={item} />;
                     }
-                    that.setState({
-                      page_index : that.state.page_index + 1
-                    });
-                }}
-                >הבא</span>
+                  )}
 
-              <span>
-                 &nbsp; דף  &nbsp;
-              {that.state.page_index+1}
-             &nbsp;   מתוך  &nbsp;
-              {that.state.dataSetChunks.length}
-              </span>
+                  <div className={"pageing-wrapper center"}>
+                    <span
+                      onClick={function (e) {
+                        if (
+                          that.state.page_index ===
+                          that.state.dataSetChunks.length
+                        ) {
+                          return false;
+                        }
+                        that.setState({
+                          page_index: that.state.page_index + 1,
+                        });
+                      }}
+                    >
+                      הבא
+                    </span>
 
-              <span onClick={function(e) {
-                  if(that.state.page_index === 0){
-                    return false;
-                  }
-                  that.setState({
-                    page_index : that.state.page_index - 1
-                  });
-              }}
-              >הקודם</span>
+                    <span>
+                      &nbsp; דף &nbsp;
+                      {that.state.page_index + 1}
+                      &nbsp; מתוך &nbsp;
+                      {that.state.dataSetChunks.length}
+                    </span>
 
-              </div>
-
-                {this.state.dataSetChunks[that.state.page_index].map(function (
-                  item,
-                  index
-                ) {
-                  return <ItemBlock key={item.id} item={item} />;
-                })}
-
-
-                <div className={"pageing-wrapper center"}>
-                  <span onClick={function(e) {
-                      if(that.state.page_index === that.state.dataSetChunks.length){
-                        return false;
-                      }
-                      that.setState({
-                        page_index : that.state.page_index + 1
-                      });
-                  }}
-                  >הבא</span>
-
-                <span>
-                   &nbsp; דף  &nbsp;
-                {that.state.page_index+1}
-               &nbsp;   מתוך  &nbsp;
-                {that.state.dataSetChunks.length}
-                </span>
-
-                <span onClick={function(e) {
-                    if(that.state.page_index === 0){
-                      return false;
-                    }
-                    that.setState({
-                      page_index : that.state.page_index - 1
-                    });
-                }}
-                >הקודם</span>
-
-                </div>
-                
-              </>
-            )}
+                    <span
+                      onClick={function (e) {
+                        if (that.state.page_index === 0) {
+                          return false;
+                        }
+                        that.setState({
+                          page_index: that.state.page_index - 1,
+                        });
+                      }}
+                    >
+                      הקודם
+                    </span>
+                  </div>
+                </>
+              )}
+            </div>
           </div>
         </div>
-      </div>
       </>
     );
   }
@@ -249,9 +256,10 @@ class ItemBlock extends React.Component {
         <div className="grid-item-wrapper">
           <div className="grid-item-container">
             <div className="grid-image-top">
-              <div className="centered image-bg" style={{"backgroundImage" : `url(${this.state.item.image.url})`}}>
-
-              </div>
+              <div
+                className="centered image-bg"
+                style={{ backgroundImage: `url(${this.state.item.image.url})` }}
+              ></div>
             </div>
             <div className="grid-item-content">
               <span className="item-title">{this.state.item.title}</span>

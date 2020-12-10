@@ -1,35 +1,28 @@
-import React, { Component } from 'react';
-import logo from './react.svg';
-import { Link , NavLink} from 'react-router-dom';
+import React, { Component } from "react";
+import logo from "./react.svg";
+import { Link, NavLink } from "react-router-dom";
 
 class NotFound extends React.Component {
-
   constructor(props) {
     super(props);
 
-    this.state = {
-
-    };
+    this.state = {};
   }
 
-  componentDidMount() {
+  componentDidMount() {}
 
-  }
+  componentDidUpdate(prevProps) {}
 
-  componentDidUpdate(prevProps) {
-
-  }
-
-render() {
-  return (
-        <div className={"header block"}>
-          <h1>404 - דף זה לא נמצא</h1>
-          <p>
+  render() {
+    return (
+      <div className={"header block"}>
+        <h1>404 - דף זה לא נמצא</h1>
+        <p>
           <a href={"/"}>חזרה לדף הבית</a>
-          </p>
-        </div>
-  );
-}
+        </p>
+      </div>
+    );
+  }
 }
 
 export default NotFound;
